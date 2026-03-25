@@ -32,6 +32,7 @@ dataGen = ImageDataGenerator(
     zoom_range=0.2,
     shear_range=0.1,
     rotation_range=10,
+    brightness_range=[0.5, 1.5],
     fill_mode='nearest'
 )
 
