@@ -117,7 +117,7 @@ def myModel():
     model.add(Dense(noNode, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(numClasses, activation='softmax'))
-    model.compile(optimizer=Adam(learning_rate=0.005), loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=Adam(learning_rate=0.0005), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 model = myModel()
