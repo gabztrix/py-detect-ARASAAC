@@ -5,7 +5,7 @@ from keras.models import load_model
 
 threshold = 0.70
 path = 'pictogramsOriginal'
-name_classes = os.listdir(path)
+name_classes = sorted(os.listdir(path))
 
 ##########
 #Initialize camera and model keras
@@ -19,7 +19,7 @@ def get_className(classNo):
 def preprocessing(img):
     img = img.astype("uint8")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = cv2.equalizeHist(img)
+    img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
     img = img/255
     return img
 
@@ -34,9 +34,9 @@ while True:
     cv2.rectangle(img, (100,100,), (300,300), (50,50,255), 2)
     crop_img = img[100:300, 100:300]
 
-    img = cv2.resize(crop_img, (32,32))
+    img = cv2.resize(crop_img, (64,64))
     img = preprocessing(img)
-    img = img.reshape(1, 32, 32, 1)
+    img = img.reshape(1, 64, 64, 1)
 
 
     cv2.putText(imgOriginal, "Class", (20,35), font, 0.75, (0,0,255), 2, cv2.LINE_AA)
