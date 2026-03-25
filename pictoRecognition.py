@@ -16,10 +16,10 @@ images=[]
 classNo=[]
 testRatio=0.2
 valRatio=0.2
-imgDimension=(32,32,3)
+imgDimension=(64,64,3)
 ##########
 
-myList = os.listdir(path)
+myList = sorted(os.listdir(path))
 numClasses=len(myList)
 print(f"Number of classes: {numClasses}")
 
@@ -74,8 +74,9 @@ for x in range(0, numClasses):
     numSample.append(len(np.where(y_train == x)[0]))
 
 def preprocessing(img):
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    img = cv2.equalizeHist(img)
+    img = img.astype("uint8")
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
     img = img/255
     return img
 
