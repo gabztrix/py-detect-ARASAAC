@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import os
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
