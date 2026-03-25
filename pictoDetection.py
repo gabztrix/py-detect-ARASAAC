@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from keras.models import load_model
 
-threshold = 0.75
+threshold = 0.70
 path = 'pictogramsOriginal'
 name_classes = os.listdir(path)
 
@@ -42,7 +42,7 @@ while True:
     cv2.putText(imgOriginal, "Class", (20,35), font, 0.75, (0,0,255), 2, cv2.LINE_AA)
     cv2.putText(imgOriginal, "Probability", (20,75), font, 0.75, (255,0,255), 2, cv2.LINE_AA)
 
-    prediction = model.predict(img)
+    prediction = model.predict(img, verbose = 0)
 
     classIndex = np.argmax(prediction)
     probabilityValue = np.amax(prediction)
