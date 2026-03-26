@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from keras.models import load_model
 
-threshold = 0.50
+threshold = 0.70
 path = 'pictogramsOriginal'
 name_classes = sorted(os.listdir(path))
 
@@ -16,11 +16,12 @@ model = load_model('PictoTrainingModel.keras')
 def get_className(classNo):
     return name_classes[classNo]
 
+
 def preprocessing(img):
     img = img.astype("uint8")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    img = img/255
+    _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    img = img / 255.0
     return img
 
 while True:
@@ -29,20 +30,18 @@ while True:
     if not success:
         continue
 
-    img = np.asarray(imgOriginal)
+    crop_img = imgOriginal[100:300, 100:300].copy()
 
-    cv2.rectangle(img, (100,100), (300,300), (50,50,255), 2)
-    crop_img = img[100:300, 100:300]
+    cv2.rectangle(imgOriginal, (100,100), (300,300), (50,50,255), 2)
 
-    img = cv2.resize(crop_img, (64,64))
-    img = preprocessing(img)
-    img = img.reshape(1, 64, 64, 1)
-
+    img_keras = cv2.resize(crop_img, (64,64))
+    img_keras = preprocessing(img_keras)
+    img_keras = img_keras.reshape(1, 64, 64, 1)
 
     cv2.putText(imgOriginal, "Class", (20,35), font, 0.75, (0,0,255), 2, cv2.LINE_AA)
     cv2.putText(imgOriginal, "Probability", (20,75), font, 0.75, (255,0,255), 2, cv2.LINE_AA)
 
-    prediction = model.predict(img, verbose = 0)
+    prediction = model.predict(img_keras, verbose = 0)
 
     classIndex = np.argmax(prediction)
     probabilityValue = np.amax(prediction)

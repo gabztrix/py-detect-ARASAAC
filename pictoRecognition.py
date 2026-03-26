@@ -73,11 +73,12 @@ numSample = []
 for x in range(0, numClasses):
     numSample.append(len(np.where(y_train == x)[0]))
 
+
 def preprocessing(img):
     img = img.astype("uint8")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    img = img/255
+    _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    img = img / 255.0
     return img
 
 x_train = np.array(list(map(preprocessing, x_train)))
