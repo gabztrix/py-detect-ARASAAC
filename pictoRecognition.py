@@ -4,6 +4,7 @@ import os
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
+from keras.losses import CategoricalCrossentropy
 from keras.models import Sequential
 from keras.layers import Conv2D, Dense, MaxPooling2D, Activation, Dropout, Flatten
 from keras.optimizers import Adam
@@ -102,23 +103,23 @@ def myModel():
     sizeFilter1 = (5, 5)
     sizeFilter2 = (3, 3)
     sizePool = (2, 2)
-    noNode = 50
+    noNode = 100
 
     model = Sequential()
     model.add((Conv2D(noFilters, sizeFilter1, input_shape=(imgDimension[0], imgDimension[1], 1), activation='relu')))
     model.add((Conv2D(noFilters, sizeFilter1, activation='relu')))
     model.add(MaxPooling2D(pool_size=sizePool))
 
-    model.add(Conv2D(noFilters // 2, sizeFilter2, activation='relu'))
-    model.add(Conv2D(noFilters // 2, sizeFilter2, activation='relu'))
+    model.add(Conv2D(noFilters * 2, sizeFilter2, activation='relu'))
+    model.add(Conv2D(noFilters * 2, sizeFilter2, activation='relu'))
     model.add(MaxPooling2D(pool_size=sizePool))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.3))
 
     model.add(Flatten())
     model.add(Dense(noNode, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.4))
     model.add(Dense(numClasses, activation='softmax'))
-    model.compile(optimizer=Adam(learning_rate=0.0005), loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=Adam(learning_rate=0.0005), loss=CategoricalCrossentropy(label_smoothing=0.1), metrics=['accuracy'])
     return model
 
 model = myModel()

@@ -31,7 +31,7 @@ while True:
 
     img = np.asarray(imgOriginal)
 
-    cv2.rectangle(img, (100,100,), (300,300), (50,50,255), 2)
+    cv2.rectangle(img, (100,100), (300,300), (50,50,255), 2)
     crop_img = img[100:300, 100:300]
 
     img = cv2.resize(crop_img, (64,64))
@@ -49,7 +49,7 @@ while True:
 
     if probabilityValue > threshold:
         namePict = get_className(classIndex)
-        text_class = f"{classIndex} {namePict}"
+        text_class = f"{namePict}"
 
         cv2.putText(imgOriginal, text_class, (120, 35), font, 0.75, (0, 0, 255), 2, cv2.LINE_AA)
         cv2.putText(imgOriginal, f"{round(probabilityValue * 100, 2)}%", (180, 75), font, 0.75, (255, 0, 0), 2, cv2.LINE_AA)
