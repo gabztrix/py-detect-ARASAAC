@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from keras.models import load_model
 
-threshold = 0.70
+threshold = 0.50
 path = 'pictogramsOriginal'
 name_classes = sorted(os.listdir(path))
 
