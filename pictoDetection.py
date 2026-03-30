@@ -70,7 +70,6 @@ while True:
                 cv2.putText(imgOriginal, texto_classe, (x, y - 10), font, 0.75, (0, 255, 0), 2, cv2.LINE_AA)
 
                 cv2.imshow("Cropped_Img", crop_img)
-                break
 
     cv2.imshow("Result", imgOriginal)
 
