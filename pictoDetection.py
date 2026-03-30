@@ -66,8 +66,8 @@ while True:
                 namePict = get_className(classIndex)
 
                 cv2.rectangle(imgOriginal, (x, y), (x + w, y + h), (0, 255, 0), 3)
-                texto_classe = f"{namePict} {round(probabilityValue * 100, 1)}%"
-                cv2.putText(imgOriginal, texto_classe, (x, y - 10), font, 0.75, (0, 255, 0), 2, cv2.LINE_AA)
+                text_class = f"{namePict} {probabilityValue * 100:.1f}%"
+                cv2.putText(imgOriginal, text_class, (x, y - 10), font, 0.75, (0, 255, 0), 2, cv2.LINE_AA)
 
                 cv2.imshow("Cropped_Img", crop_img)
 
