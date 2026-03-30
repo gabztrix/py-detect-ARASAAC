@@ -16,7 +16,7 @@ model = load_model('PictoTrainingModel.keras')
 def get_className(classNo):
     return name_classes[classNo]
 
-
+#Preprocess image using Otsu Threshold
 def preprocessing(img):
     img = img.astype("uint8")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -24,43 +24,61 @@ def preprocessing(img):
     img = img / 255.0
     return img
 
+
 while True:
     success, imgOriginal = cap.read()
 
     if not success:
         continue
 
-    crop_img = imgOriginal[100:300, 100:300].copy()
+    #Prepare image to find contour
+    imgGray = cv2.cvtColor(imgOriginal, cv2.COLOR_BGR2GRAY)
+    imgBlur = cv2.GaussianBlur(imgGray, (5, 5), 1)
 
-    cv2.rectangle(imgOriginal, (100,100), (300,300), (50,50,255), 2)
+    #Detect image edges (strong lines)
+    imgCanny = cv2.Canny(imgBlur, 50, 150)
 
-    img_keras = cv2.resize(crop_img, (64,64))
-    img_keras = preprocessing(img_keras)
-    img_keras = img_keras.reshape(1, 64, 64, 1)
+    #Find closed contours
+    contours, _ = cv2.findContours(imgCanny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
-    cv2.putText(imgOriginal, "Class", (20,35), font, 0.75, (0,0,255), 2, cv2.LINE_AA)
-    cv2.putText(imgOriginal, "Probability", (20,75), font, 0.75, (255,0,255), 2, cv2.LINE_AA)
+    #Analyze the contours found
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
 
-    prediction = model.predict(img_keras, verbose = 0)
+        #Ignore tiny areas
+        if area > 5000:
+            #Dynamic crop based on position found
+            x, y, w, h = cv2.boundingRect(cnt)
+            crop_img = imgOriginal[y:y + h, x:x + w].copy()
 
-    classIndex = np.argmax(prediction)
-    probabilityValue = np.amax(prediction)
+            #Prepare cropped image for Keras model
+            img_keras = cv2.resize(crop_img, (64, 64))
+            img_keras = preprocessing(img_keras)
+            img_keras = img_keras.reshape(1, 64, 64, 1)
 
-    if probabilityValue > threshold:
-        namePict = get_className(classIndex)
-        text_class = f"{namePict}"
+            #Prediction
+            prediction = model.predict(img_keras, verbose=0)
+            classIndex = np.argmax(prediction)
+            probabilityValue = np.amax(prediction)
 
-        cv2.putText(imgOriginal, text_class, (120, 35), font, 0.75, (0, 0, 255), 2, cv2.LINE_AA)
-        cv2.putText(imgOriginal, f"{round(probabilityValue * 100, 2)}%", (180, 75), font, 0.75, (255, 0, 0), 2, cv2.LINE_AA)
+            if probabilityValue > threshold:
+                namePict = get_className(classIndex)
+
+                cv2.rectangle(imgOriginal, (x, y), (x + w, y + h), (0, 255, 0), 3)
+                texto_classe = f"{namePict} {round(probabilityValue * 100, 1)}%"
+                cv2.putText(imgOriginal, texto_classe, (x, y - 10), font, 0.75, (0, 255, 0), 2, cv2.LINE_AA)
+
+                cv2.imshow("Cropped_Img", crop_img)
+                break
 
     cv2.imshow("Result", imgOriginal)
-    cv2.imshow("Cropped_Img", crop_img)
 
     k = cv2.waitKey(1)
     if k == ord('q'):
         break
 
-cap.release ()
+cap.release()
 cv2.destroyAllWindows()
 
 
