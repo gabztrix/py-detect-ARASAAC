@@ -9,7 +9,7 @@ name_classes = sorted(os.listdir(path))
 
 ##########
 #Initialize camera and model keras
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(2) #0 to camera default, 2 to iriun webcam
 font = cv2.FONT_HERSHEY_DUPLEX
 model = load_model('PictoTrainingModel.keras')
 
